@@ -119,14 +119,14 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900" style={{ fontFamily: "'Poppins', sans-serif" }}>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900" style={{ fontFamily: "'Poppins', sans-serif" }}>
                 Calculadora DIFAL
               </h1>
-              <p className="text-sm text-slate-600 mt-1">
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">
                 Especialista Tributário - Cálculo Preciso do Diferencial de Alíquota
               </p>
             </div>
@@ -134,7 +134,7 @@ export default function Home() {
               variant="outline"
               size="sm"
               onClick={handleReset}
-              className="gap-2"
+              className="gap-2 w-full sm:w-auto"
             >
               <RotateCcw className="w-4 h-4" />
               Limpar
@@ -144,11 +144,11 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
           {/* Left Panel - Inputs */}
-          <div className="lg:col-span-2">
-            <Card className="p-6 shadow-sm border-slate-200">
+          <div className="lg:col-span-12 xl:col-span-8 space-y-6">
+            <Card className="p-4 sm:p-8 shadow-md border-slate-200 bg-white">
               <h2 className="text-xl font-semibold text-slate-900 mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
                 Dados da Operação
               </h2>
@@ -218,18 +218,18 @@ export default function Home() {
                   <Label className="text-sm font-medium text-slate-700 block mb-3">
                     Tipo de Operação
                   </Label>
-                  <div className="flex gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
                       variant={operationType === 'consumer' ? 'default' : 'outline'}
                       onClick={() => setOperationType('consumer')}
-                      className="flex-1"
+                      className="w-full"
                     >
                       Consumidor Final
                     </Button>
                     <Button
                       variant={operationType === 'contributor' ? 'default' : 'outline'}
                       onClick={() => setOperationType('contributor')}
-                      className="flex-1"
+                      className="w-full"
                     >
                       Contribuinte
                     </Button>
@@ -241,26 +241,22 @@ export default function Home() {
                   <Label className="text-sm font-medium text-slate-700 block mb-3">
                     Método de Cálculo
                   </Label>
-                  <div className="flex gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Button
                       variant={calculationMethod === 'single-base' ? 'default' : 'outline'}
                       onClick={() => setCalculationMethod('single-base')}
-                      className="flex-1"
+                      className="h-auto py-3 px-4 flex flex-col items-start"
                     >
-                      <div className="text-left">
-                        <div className="font-medium">Base Única</div>
-                        <div className="text-xs opacity-70">Por Fora</div>
-                      </div>
+                      <span className="font-semibold">Base Única</span>
+                      <span className="text-xs opacity-80">Por Fora</span>
                     </Button>
                     <Button
                       variant={calculationMethod === 'double-base' ? 'default' : 'outline'}
                       onClick={() => setCalculationMethod('double-base')}
-                      className="flex-1"
+                      className="h-auto py-3 px-4 flex flex-col items-start"
                     >
-                      <div className="text-left">
-                        <div className="font-medium">Base Dupla</div>
-                        <div className="text-xs opacity-70">Por Dentro</div>
-                      </div>
+                      <span className="font-semibold">Base Dupla</span>
+                      <span className="text-xs opacity-80">Por Dentro</span>
                     </Button>
                   </div>
                   <p className="text-xs text-slate-500 mt-2">
@@ -367,9 +363,9 @@ export default function Home() {
           </div>
 
           {/* Right Panel - Results */}
-          <div>
+          <div className="lg:col-span-12 xl:col-span-4 space-y-6">
             {calculation && (
-              <Card className="p-6 shadow-sm border-green-200 bg-gradient-to-br from-green-50 to-white">
+              <Card className="p-4 sm:p-6 shadow-lg border-green-200 bg-white sticky top-24">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold text-slate-900" style={{ fontFamily: "'Poppins', sans-serif" }}>
                     Resultado
@@ -480,18 +476,20 @@ export default function Home() {
         </div>
 
         {/* Tabela de Alíquotas */}
-        <Card className="mt-8 p-6 shadow-sm border-slate-200">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4" style={{ fontFamily: "'Poppins', sans-serif" }}>
-            Tabela de Alíquotas por Estado
+        <Card className="mt-8 p-4 sm:p-8 shadow-sm border-slate-200 bg-white">
+          <h2 className="text-xl font-semibold text-slate-900 mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
+            Tabela de Alíquotas por Estado (2025)
           </h2>
           <Tabs defaultValue="sudeste" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="sudeste">Sudeste</TabsTrigger>
-              <TabsTrigger value="sul">Sul</TabsTrigger>
-              <TabsTrigger value="nordeste">Nordeste</TabsTrigger>
-              <TabsTrigger value="norte">Norte</TabsTrigger>
-              <TabsTrigger value="centro-oeste">Centro-Oeste</TabsTrigger>
-            </TabsList>
+            <div className="overflow-x-auto pb-2 scrollbar-hide">
+              <TabsList className="inline-flex w-full sm:grid sm:grid-cols-5 min-w-[600px] sm:min-w-0">
+                <TabsTrigger value="sudeste">Sudeste</TabsTrigger>
+                <TabsTrigger value="sul">Sul</TabsTrigger>
+                <TabsTrigger value="nordeste">Nordeste</TabsTrigger>
+                <TabsTrigger value="norte">Norte</TabsTrigger>
+                <TabsTrigger value="centro-oeste">Centro-Oeste</TabsTrigger>
+              </TabsList>
+            </div>
 
             {['sudeste', 'sul', 'nordeste', 'norte', 'centro-oeste'].map((region) => (
               <TabsContent key={region} value={region}>
