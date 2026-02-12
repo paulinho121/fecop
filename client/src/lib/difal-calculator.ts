@@ -23,6 +23,7 @@ export interface DIFALCalculation {
   interstateRate: number;
   hasFecop: boolean;
   fecopPercent: number;
+  isImported: boolean;
   results: {
     icms_origem: number;
     icms_destino_total: number;
@@ -94,11 +95,18 @@ export function calculateDIFAL(
   calculationMethod: 'single-base' | 'double-base',
   hasFecop: boolean = false,
   fecopPercent: number = 0,
-  manualInterstateRate?: number
+  manualInterstateRate?: number,
+  isImported: boolean = false
 ): DIFALCalculation {
-  const interstateRate = manualInterstateRate !== undefined
-    ? manualInterstateRate
-    : getInterstateRate(destinationState.code);
+  let interstateRate: number;
+
+  if (manualInterstateRate !== undefined) {
+    interstateRate = manualInterstateRate;
+  } else if (isImported) {
+    interstateRate = 0.04;
+  } else {
+    interstateRate = getInterstateRate(destinationState.code);
+  }
 
   const internalDestRate = destinationState.internalRate;
 
@@ -158,7 +166,7 @@ Valor da Operação: R$ ${invoiceValue.toFixed(2)}
 Origem: ${originState.code} | Destino: ${destinationState.code}
 Alíquota Interestadual: ${(interstateRate * 100).toFixed(2)}%
 Alíquota Interna Destino: ${(internalDestRate * 100).toFixed(2)}%
-${hasFecop ? `FECOP: ${fecopPercent}%` : 'Sem FECOP'}
+${isImported ? 'Mercadoria Importada (4%)\n' : ''}${hasFecop ? `FECOP: ${fecopPercent}%` : 'Sem FECOP'}
 
 ICMS Origem: R$ ${icms_origem.toFixed(2)}
 ICMS Destino Total: R$ ${icms_destino_total.toFixed(2)}
@@ -177,6 +185,7 @@ TOTAL RECOLHER DESTINO: R$ ${total_recolher_destino.toFixed(2)}
     interstateRate,
     hasFecop,
     fecopPercent,
+    isImported,
     results: {
       icms_origem: Number(icms_origem.toFixed(2)),
       icms_destino_total: Number(icms_destino_total.toFixed(2)),

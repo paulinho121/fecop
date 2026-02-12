@@ -42,6 +42,7 @@ export default function Home() {
   const [isManualMode, setIsManualMode] = useState<boolean>(false);
   const [manualInterstateRate, setManualInterstateRate] = useState<string>('12');
   const [manualInternalRate, setManualInternalRate] = useState<string>('18');
+  const [isImported, setIsImported] = useState<boolean>(false);
 
   // Recalcular sempre que os parâmetros mudam
   useEffect(() => {
@@ -68,12 +69,13 @@ export default function Home() {
           calculationMethod,
           hasFecop,
           fPercent,
-          isManualMode ? (parseFloat(manualInterstateRate) || 0) / 100 : undefined
+          isManualMode ? (parseFloat(manualInterstateRate) || 0) / 100 : undefined,
+          isImported
         );
         setCalculation(result);
       }
     }
-  }, [invoiceValue, originState, destinationState, operationType, calculationMethod, hasFecop, fecopPercent, isManualMode, manualInterstateRate, manualInternalRate]);
+  }, [invoiceValue, originState, destinationState, operationType, calculationMethod, hasFecop, fecopPercent, isManualMode, manualInterstateRate, manualInternalRate, isImported]);
 
   const handleCalculate = () => {
     if (calculation) {
@@ -92,6 +94,7 @@ export default function Home() {
     setIsManualMode(false);
     setManualInterstateRate('12');
     setManualInternalRate('18');
+    setIsImported(false);
     setHistory([]);
   };
 
@@ -258,96 +261,114 @@ export default function Home() {
                       <span className="font-semibold">Base Dupla</span>
                       <span className="text-xs opacity-80">Por Dentro</span>
                     </Button>
-                  </div>
-                  <p className="text-xs text-slate-500 mt-2">
-                    {calculationMethod === 'single-base'
-                      ? 'Aplicável à maioria dos estados'
-                      : 'Aplicável a São Paulo e alguns estados'}
-                  </p>
-                </div>
-
-                {/* FECOP */}
-                <div className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="has-fecop" className="text-sm font-medium text-slate-700">
-                      Adicional de FECOP
-                    </Label>
-                    <div
-                      className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${hasFecop ? 'bg-blue-600' : 'bg-slate-300'}`}
-                      onClick={() => setHasFecop(!hasFecop)}
-                    >
-                      <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${hasFecop ? 'translate-x-6' : ''}`} />
-                    </div>
+                    <p className="text-xs text-slate-500 mt-2">
+                      {calculationMethod === 'single-base'
+                        ? 'Aplicável à maioria dos estados'
+                        : 'Aplicável a São Paulo e alguns estados'}
+                    </p>
                   </div>
 
-                  {hasFecop && (
-                    <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                      <Label htmlFor="fecop-percent" className="text-xs font-medium text-slate-600">
-                        Percentual do FECOP (%)
+                  {/* Mercadoria Importada Toggle */}
+                  <div className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="is-imported" className="text-sm font-medium text-slate-700">
+                        Mercadoria Importada (4%)
                       </Label>
-                      <Input
-                        id="fecop-percent"
-                        type="number"
-                        value={fecopPercent}
-                        onChange={(e) => setFecopPercent(e.target.value)}
-                        className="mt-1 h-8 text-sm"
-                        min="0"
-                        max="100"
-                        step="0.1"
-                      />
+                      <div
+                        className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${isImported ? 'bg-orange-600' : 'bg-slate-300'}`}
+                        onClick={() => setIsImported(!isImported)}
+                      >
+                        <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${isImported ? 'translate-x-6' : ''}`} />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      Aplica a alíquota interestadual de 4% para produtos com conteúdo de importação superior a 40%.
+                    </p>
+                  </div>
+
+                  {/* FECOP */}
+                  <div className="space-y-3 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="has-fecop" className="text-sm font-medium text-slate-700">
+                        Adicional de FECOP
+                      </Label>
+                      <div
+                        className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${hasFecop ? 'bg-blue-600' : 'bg-slate-300'}`}
+                        onClick={() => setHasFecop(!hasFecop)}
+                      >
+                        <div className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${hasFecop ? 'translate-x-6' : ''}`} />
+                      </div>
+                    </div>
+
+                    {hasFecop && (
+                      <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                        <Label htmlFor="fecop-percent" className="text-xs font-medium text-slate-600">
+                          Percentual do FECOP (%)
+                        </Label>
+                        <Input
+                          id="fecop-percent"
+                          type="number"
+                          value={fecopPercent}
+                          onChange={(e) => setFecopPercent(e.target.value)}
+                          className="mt-1 h-8 text-sm"
+                          min="0"
+                          max="100"
+                          step="0.1"
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Modo Manual Toggle */}
+                  <div className="flex items-center gap-2 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
+                    <div
+                      className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${isManualMode ? 'bg-blue-600' : 'bg-slate-300'}`}
+                      onClick={() => setIsManualMode(!isManualMode)}
+                    >
+                      <div className={`bg-white w-3 h-3 rounded-full shadow transform transition-transform ${isManualMode ? 'translate-x-5' : ''}`} />
+                    </div>
+                    <Label className="text-xs font-semibold text-blue-900 cursor-pointer" onClick={() => setIsManualMode(!isManualMode)}>
+                      Ajustar Alíquotas Manualmente
+                    </Label>
+                  </div>
+
+                  {isManualMode && (
+                    <div className="grid grid-cols-2 gap-4 p-4 bg-blue-50/30 border border-blue-100 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div>
+                        <Label htmlFor="manual-interstate" className="text-xs font-medium text-slate-600">
+                          Alíq. Interestadual (%)
+                        </Label>
+                        <Input
+                          id="manual-interstate"
+                          type="number"
+                          value={manualInterstateRate}
+                          onChange={(e) => setManualInterstateRate(e.target.value)}
+                          className="mt-1 h-8 text-sm"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="manual-internal" className="text-xs font-medium text-slate-600">
+                          Alíq. Interna Destino (%)
+                        </Label>
+                        <Input
+                          id="manual-internal"
+                          type="number"
+                          value={manualInternalRate}
+                          onChange={(e) => setManualInternalRate(e.target.value)}
+                          className="mt-1 h-8 text-sm"
+                        />
+                      </div>
                     </div>
                   )}
-                </div>
 
-                {/* Modo Manual Toggle */}
-                <div className="flex items-center gap-2 p-3 bg-blue-50/50 rounded-lg border border-blue-100">
-                  <div
-                    className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${isManualMode ? 'bg-blue-600' : 'bg-slate-300'}`}
-                    onClick={() => setIsManualMode(!isManualMode)}
+                  {/* Botão Calcular */}
+                  <Button
+                    onClick={handleCalculate}
+                    className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3"
                   >
-                    <div className={`bg-white w-3 h-3 rounded-full shadow transform transition-transform ${isManualMode ? 'translate-x-5' : ''}`} />
-                  </div>
-                  <Label className="text-xs font-semibold text-blue-900 cursor-pointer" onClick={() => setIsManualMode(!isManualMode)}>
-                    Ajustar Alíquotas Manualmente
-                  </Label>
+                    Calcular DIFAL
+                  </Button>
                 </div>
-
-                {isManualMode && (
-                  <div className="grid grid-cols-2 gap-4 p-4 bg-blue-50/30 border border-blue-100 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
-                    <div>
-                      <Label htmlFor="manual-interstate" className="text-xs font-medium text-slate-600">
-                        Alíq. Interestadual (%)
-                      </Label>
-                      <Input
-                        id="manual-interstate"
-                        type="number"
-                        value={manualInterstateRate}
-                        onChange={(e) => setManualInterstateRate(e.target.value)}
-                        className="mt-1 h-8 text-sm"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="manual-internal" className="text-xs font-medium text-slate-600">
-                        Alíq. Interna Destino (%)
-                      </Label>
-                      <Input
-                        id="manual-internal"
-                        type="number"
-                        value={manualInternalRate}
-                        onChange={(e) => setManualInternalRate(e.target.value)}
-                        className="mt-1 h-8 text-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Botão Calcular */}
-                <Button
-                  onClick={handleCalculate}
-                  className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3"
-                >
-                  Calcular DIFAL
-                </Button>
               </div>
             </Card>
 
@@ -453,7 +474,7 @@ export default function Home() {
                         setOperationType(calc.operationType);
                         setCalculationMethod(calc.calculationMethod);
                         setHasFecop(calc.hasFecop);
-                        setFecopPercent(calc.fecopPercent.toString());
+                        setIsImported(calc.isImported || false);
                       }}
                     >
                       <div className="flex justify-between items-start">
@@ -473,10 +494,10 @@ export default function Home() {
               </Card>
             )}
           </div>
-        </div>
+        </div >
 
         {/* Tabela de Alíquotas */}
-        <Card className="mt-8 p-4 sm:p-8 shadow-sm border-slate-200 bg-white">
+        < Card className="mt-8 p-4 sm:p-8 shadow-sm border-slate-200 bg-white" >
           <h2 className="text-xl font-semibold text-slate-900 mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
             Tabela de Alíquotas por Estado (2025)
           </h2>
