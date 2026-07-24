@@ -141,8 +141,14 @@ export function calculateDIFAL(
     message = "DIFAL calculado conforme EC 87/2015";
   }
 
-  // 3. FECOP
-  const fecop = hasFecop ? (invoiceValue * (fecopPercent / 100)) : 0;
+  // 3. FECOP - sempre calculado "por dentro": a alíquota do FECOP compõe
+  // sua própria base de cálculo (gross-up), independente do método de DIFAL escolhido.
+  let fecop = 0;
+  if (hasFecop && fecopPercent > 0) {
+    const fecopRate = fecopPercent / 100;
+    const fecopBase = invoiceValue / (1 - internalDestRate - fecopRate);
+    fecop = fecopBase * fecopRate;
+  }
   if (hasFecop && fecop > 0) {
     if (finalDifal > 0) {
       message += " com adicional de FECOP.";
