@@ -119,12 +119,17 @@ export function calculateDIFAL(
   let icms_destino_total: number;
   let difal: number;
 
+  // Quando há FECOP em Base Dupla, a alíquota do FECOP compõe a MESMA base
+  // "por dentro" do ICMS destino (não uma base separada) - conforme planilha
+  // de referência (aba "Cálculo BC Dupla - Diferencial", ex.: linha RJ "20 icms + 2 fecop").
+  const fecopRateForBase = hasFecop ? fecopPercent / 100 : 0;
+
   if (calculationMethod === 'single-base') {
     icms_destino_total = invoiceValue * internalDestRate;
     difal = icms_destino_total - icms_origem;
   } else {
-    // Mantendo a lógica de Base Dupla se selecionada, mas adaptando aos campos do prompt
-    const baseWithoutICMS = invoiceValue / (1 - internalDestRate);
+    const effectiveRate = internalDestRate + fecopRateForBase;
+    const baseWithoutICMS = invoiceValue / (1 - effectiveRate);
     icms_destino_total = baseWithoutICMS * internalDestRate;
     difal = icms_destino_total - (baseWithoutICMS * interstateRate);
   }
