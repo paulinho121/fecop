@@ -397,13 +397,13 @@ export default function Home() {
                 </div>
 
                 <div className="space-y-4">
-                  {/* DIFAL Principal */}
+                  {/* DIFAL Principal - já soma o FECOP quando houver, para não confundir o usuário */}
                   <div className="bg-white rounded-lg p-4 border-2 border-green-500">
                     <p className="text-xs text-slate-600 uppercase tracking-wide font-semibold">
-                      DIFAL a Recolher
+                      {calculation.results.fecop > 0 ? 'DIFAL + FECOP a Recolher' : 'DIFAL a Recolher'}
                     </p>
                     <p className="text-3xl font-bold text-green-700 mt-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                      {formatCurrency(calculation.results.difal)}
+                      {formatCurrency(calculation.results.total_recolher_destino)}
                     </p>
                   </div>
 
@@ -421,18 +421,22 @@ export default function Home() {
                         {formatCurrency(calculation.results.icms_destino_total)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
-                      <span className="text-sm text-slate-600">FECOP:</span>
-                      <span className="font-mono font-semibold text-slate-900">
-                        {formatCurrency(calculation.results.fecop)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 bg-white border border-green-200 rounded">
-                      <span className="text-sm font-semibold text-green-800">Total a Recolher:</span>
-                      <span className="font-mono font-bold text-green-900">
-                        {formatCurrency(calculation.results.total_recolher_destino)}
-                      </span>
-                    </div>
+                    {calculation.results.fecop > 0 && (
+                      <>
+                        <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
+                          <span className="text-sm text-slate-600">DIFAL (sem FECOP):</span>
+                          <span className="font-mono font-semibold text-slate-900">
+                            {formatCurrency(calculation.results.difal)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
+                          <span className="text-sm text-slate-600">FECOP:</span>
+                          <span className="font-mono font-semibold text-slate-900">
+                            {formatCurrency(calculation.results.fecop)}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {/* Mensagem do Especialista */}
